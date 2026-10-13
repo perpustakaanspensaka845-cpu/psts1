@@ -3,126 +3,199 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Portal PSTS Online</title>
-  <!-- Bootstrap 5 CSS & FontAwesome Icons -->
+  <title>Portal Penilaian Sumatif Tengah Semester</title>
+  <!-- Bootstrap 5 CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-  <!-- PapaParse Library untuk Parsing CSV -->
+  <!-- PapaParse untuk membaca data Google Sheets -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
-  
+
   <style>
     body {
-      background-color: #f0f2f5;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f4f6f9;
+      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
     }
-    .header-card {
-      background: linear-gradient(135deg, #0d6efd, #0a58ca);
+    
+    /* Header Banner Biru */
+    .header-banner {
+      background-color: #0d6efd;
       color: white;
       border-radius: 16px;
-      padding: 24px;
-      margin-bottom: 24px;
-      box-shadow: 0 8px 20px rgba(13, 110, 253, 0.15);
+      padding: 30px 20px;
+      text-align: center;
+      margin-bottom: 25px;
+      box-shadow: 0 4px 15px rgba(13, 110, 253, 0.2);
     }
     .school-logo {
-      max-height: 80px;
+      max-height: 70px;
       background: white;
       padding: 6px;
-      border-radius: 12px;
-      object-fit: contain;
+      border-radius: 10px;
+      margin-bottom: 15px;
     }
-    .main-card {
+    .header-title {
+      font-size: 1.25rem;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+    .school-name {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 2px;
+    }
+    .academic-year {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #ffda6a;
+      text-transform: uppercase;
+    }
+
+    /* Form Container Card */
+    .form-card {
       background: white;
       border-radius: 16px;
       padding: 24px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+      max-width: 520px;
+      margin: 0 auto 20px auto;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+    }
+    .form-card-title {
+      color: #0d6efd;
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin-bottom: 18px;
+    }
+    .form-label {
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: #495057;
+      margin-bottom: 6px;
+    }
+    .form-select {
+      border-radius: 8px;
+      font-size: 0.95rem;
+      padding: 10px 14px;
+      border-color: #ced4da;
+    }
+
+    /* Result Card (Mata Pelajaran & Tombol) */
+    .result-card {
+      background: white;
+      border: 1.5px solid #b6d4fe;
+      border-radius: 16px;
+      padding: 24px;
+      max-width: 520px;
+      margin: 0 auto;
+      text-align: center;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+    }
+    .result-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #6c757d;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    .subject-title {
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: #212529;
+      margin-bottom: 18px;
     }
     .btn-exam {
-      font-weight: 600;
-      border-radius: 8px;
+      background-color: #0d6efd;
+      border: none;
+      border-radius: 10px;
+      padding: 12px 20px;
+      font-weight: 700;
+      font-size: 1rem;
+      transition: all 0.2s ease;
     }
-    .badge-day {
-      font-size: 0.85rem;
-      padding: 6px 12px;
-      border-radius: 20px;
+    .btn-exam:hover {
+      background-color: #0b5ed7;
+      transform: translateY(-1px);
     }
   </style>
 </head>
 <body>
 
   <div class="container py-4">
-    <!-- Header Identitas Sekolah -->
-    <div class="header-card d-flex align-items-center justify-content-between flex-wrap gap-3">
-      <div class="d-flex align-items-center gap-3">
-        <img id="logoSekolah" src="" alt="Logo" class="school-logo d-none">
-        <div>
-          <h3 id="namaSekolah" class="fw-bold mb-1">Memuat data...</h3>
-          <h5 id="judulHalaman" class="fw-normal mb-1 text-white-50">Portal Penilaian Sumatif</h5>
-          <span id="tahunAjaran" class="badge bg-white text-primary fw-semibold mt-1"></span>
-        </div>
-      </div>
-      <button class="btn btn-light text-primary fw-bold rounded-pill px-3" onclick="loadAllData()">
-        <i class="fa-solid fa-rotate-right me-1"></i> Refresh Data
-      </button>
+    <!-- 1. Header Banner -->
+    <div class="header-banner">
+      <img id="logoSekolah" src="" alt="Logo" class="school-logo d-none mx-auto">
+      <div class="header-title" id="judulHalaman">PORTAL PENILAIAN SUMATIF TENGAH SEMESTER</div>
+      <div class="school-name" id="namaSekolah">SMP NEGERI 1 KANDAT</div>
+      <div class="academic-year" id="tahunAjaran">SEMESTER 1 TAHUN AJARAN 2026/2027</div>
     </div>
 
-    <!-- Panel Filter & Pencarian -->
-    <div class="main-card mb-4">
-      <div class="row g-3">
-        <div class="col-md-6">
-          <label class="form-label fw-semibold"><i class="fa-solid fa-filter me-1"></i> Pilih Kelas / Rombel:</label>
-          <select id="filterKelas" class="form-select form-select-lg" onchange="renderTabel()">
-            <option value="SEMUA">-- Tampilkan Semua Kelas --</option>
+    <!-- Indicator Loading -->
+    <div id="loading" class="text-center py-4">
+      <div class="spinner-border text-primary" role="status"></div>
+      <p class="mt-2 text-muted fw-semibold">Memuat data jadwal...</p>
+    </div>
+
+    <!-- Main Content (Awalnya Tersembunyi) -->
+    <div id="mainContent" class="d-none">
+      
+      <!-- 2. Form Card Choice -->
+      <div class="form-card">
+        <div class="form-card-title">Pilih Jadwal & Kelas</div>
+        
+        <!-- Dropdown Hari -->
+        <div class="mb-3">
+          <label class="form-label">1. Pilih Hari</label>
+          <select id="selectHari" class="form-select" onchange="updateView()">
+            <option value="">-- Pilih Hari --</option>
           </select>
         </div>
-        <div class="col-md-6">
-          <label class="form-label fw-semibold"><i class="fa-solid fa-magnifying-glass me-1"></i> Cari Mata Pelajaran / Hari:</label>
-          <input type="text" id="searchKeyword" class="form-control form-control-lg" placeholder="Ketik nama mata pelajaran atau hari..." oninput="renderTabel()">
+
+        <!-- Dropdown Kelas -->
+        <div class="mb-3">
+          <label class="form-label">2. Pilih Kelas</label>
+          <select id="selectKelas" class="form-select" onchange="updateView()">
+            <option value="">-- Pilih Kelas --</option>
+          </select>
+        </div>
+
+        <!-- Dropdown Jam -->
+        <div class="mb-1">
+          <label class="form-label">3. Pilih Jam Ke-</label>
+          <select id="selectJam" class="form-select" onchange="updateView()">
+            <option value="1">Jam Ke-1</option>
+            <option value="2">Jam Ke-2</option>
+          </select>
         </div>
       </div>
-    </div>
 
-    <!-- Spinner Loading -->
-    <div id="loading" class="text-center py-5">
-      <div class="spinner-border text-primary" style="width: 3.5rem; height: 3.5rem;" role="status"></div>
-      <p class="mt-3 text-secondary fw-semibold">Mengambil data ujian langsung dari Google Sheets...</p>
-    </div>
+      <!-- 3. Result Container -->
+      <div id="resultContainer"></div>
 
-    <!-- Konten Tabel Data Ujian -->
-    <div id="content" class="main-card d-none">
-      <div class="table-responsive">
-        <table class="table table-hover align-middle">
-          <thead class="table-primary" id="tableHead"></thead>
-          <tbody id="tableBody"></tbody>
-        </table>
-      </div>
     </div>
   </div>
 
   <script>
-    // ID Spreadsheet Kumpulan PSTS Anda
     const SPREADSHEET_ID = '1HH-8ikCLW2fHHtYZqT1k9ZfPBJcmgQRp0ag0nH7LCGQ';
 
-    let rawUjianData = [];
-    let headersList = [];
+    let rawUjianRows = [];
+    let classHeaders = []; // Menyimpan daftar kelas dari kolom ke-3 dst.
 
-    // Fungsi Fetch Data CSV dari Tab Google Sheets
-    async function fetchCSV(sheetName, hasHeader = true) {
+    // Fungsi Fetch CSV dari Google Spreadsheet
+    async function fetchCSV(sheetName) {
       const url = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(sheetName)}`;
       const response = await fetch(url);
-      if (!response.ok) throw new Error('Gagal mengakses spreadsheet');
-      const csvText = await response.text();
-      return Papa.parse(csvText, { header: hasHeader, skipEmptyLines: true }).data;
+      if (!response.ok) throw new Error('Gagal mengambil data');
+      const text = await response.text();
+      return Papa.parse(text, { header: false, skipEmptyLines: true }).data;
     }
 
-    async function loadAllData() {
-      document.getElementById('loading').classList.remove('d-none');
-      document.getElementById('content').classList.add('d-none');
-
+    async function initApp() {
       try {
-        // 1. Ambil Data Tab 'Pengaturan'
-        const configRows = await fetchCSV('Pengaturan', false);
+        // 1. Ambil Pengaturan
+        const configData = await fetchCSV('Pengaturan');
         const config = {};
-        configRows.forEach(row => {
+        configData.forEach(row => {
           if (row[0]) config[row[0].trim()] = row[1] ? row[1].trim() : '';
         });
 
@@ -135,89 +208,115 @@
           logo.classList.remove('d-none');
         }
 
-        // 2. Ambil Data Tab 'Data_Ujian'
-        const ujianRows = await fetchCSV('Data_Ujian', true);
-        
-        if (ujianRows.length > 0) {
-          rawUjianData = ujianRows;
-          headersList = Object.keys(ujianRows[0]);
-
-          // Mengisi Pilihan Filter Kelas (Ambil kolom selain Hari, Jam, dan Mata Pelajaran)
-          const filterSelect = document.getElementById('filterKelas');
-          filterSelect.innerHTML = '<option value="SEMUA">-- Tampilkan Semua Kelas --</option>';
+        // 2. Ambil Data Ujian
+        const ujianData = await fetchCSV('Data_Ujian');
+        if (ujianData.length > 0) {
+          const headerRow = ujianData[0];
           
-          headersList.slice(3).forEach(colName => {
-            if (colName && colName.trim() !== '' && colName.trim() !== '-') {
-              const opt = document.createElement('option');
-              opt.value = colName;
-              opt.innerText = `Kelas ${colName}`;
-              filterSelect.appendChild(opt);
+          // Ambil nama kelas dari kolom index 3 ke atas
+          classHeaders = [];
+          for (let i = 3; i < headerRow.length; i++) {
+            const cName = headerRow[i] ? headerRow[i].trim() : '';
+            if (cName && cName !== '-') {
+              classHeaders.push({ index: i, name: cName });
             }
+          }
+
+          rawUjianRows = ujianData.slice(1);
+
+          // Populate Select Hari (Unik)
+          const hariList = [];
+          rawUjianRows.forEach(row => {
+            const h = row[0] ? row[0].trim() : '';
+            if (h && !hariList.includes(h)) hariList.push(h);
           });
 
-          renderTabel();
+          const selectHari = document.getElementById('selectHari');
+          selectHari.innerHTML = '';
+          hariList.forEach(h => {
+            const opt = document.createElement('option');
+            opt.value = h;
+            opt.innerText = h;
+            selectHari.appendChild(opt);
+          });
+
+          // Populate Select Kelas
+          const selectKelas = document.getElementById('selectKelas');
+          selectKelas.innerHTML = '';
+          classHeaders.forEach(c => {
+            const opt = document.createElement('option');
+            opt.value = c.index;
+            opt.innerText = c.name;
+            selectKelas.appendChild(opt);
+          });
+
+          // Default Pilihan Awal
+          if (hariList.length > 0) selectHari.value = hariList[0];
+          if (classHeaders.length > 1) selectKelas.value = classHeaders[1].index; // Misal pilih 7(DEF)
         }
 
         document.getElementById('loading').classList.add('d-none');
-        document.getElementById('content').classList.remove('d-none');
+        document.getElementById('mainContent').classList.remove('d-none');
 
-      } catch (error) {
-        console.error(error);
-        alert('Gagal mengambil data dari Google Spreadsheet. Pastikan pengaturan berbagi file sudah diubah ke "Siapa saja yang memiliki link" (Pelihat)!');
+        updateView();
+
+      } catch (err) {
+        console.error(err);
+        alert('Gagal memuat data. Pastikan spreadsheet disetting "Siapa saja yang memiliki link" (Pelihat)!');
       }
     }
 
-    function renderTabel() {
-      const selectedKelas = document.getElementById('filterKelas').value;
-      const keyword = document.getElementById('searchKeyword').value.toLowerCase();
+    function updateView() {
+      const selectedHari = document.getElementById('selectHari').value;
+      const selectedKelasIdx = parseInt(document.getElementById('selectKelas').value);
+      const selectedJam = document.getElementById('selectJam').value;
+      const resultContainer = document.getElementById('resultContainer');
 
-      // Filter kolom mana saja yang ingin ditampilkan
-      let activeHeaders = [];
-      if (selectedKelas === 'SEMUA') {
-        activeHeaders = headersList;
-      } else {
-        // Tampilkan 3 kolom pertama (Hari, Jam, Mapel) + Kolom Kelas yang dipilih
-        activeHeaders = [headersList[0], headersList[1], headersList[2], selectedKelas];
+      if (!selectedHari || isNaN(selectedKelasIdx)) {
+        resultContainer.innerHTML = '';
+        return;
       }
 
-      // Render Header Tabel
-      let headHtml = '<tr>';
-      activeHeaders.forEach(h => {
-        headHtml += `<th class="text-nowrap">${h}</th>`;
+      // Filter baris berdasarkan Hari dan Jam
+      const matchingRows = rawUjianRows.filter(row => {
+        const h = row[0] ? row[0].trim() : '';
+        const j = row[1] ? row[1].trim() : '';
+        return h === selectedHari && j === selectedJam;
       });
-      headHtml += '</tr>';
-      document.getElementById('tableHead').innerHTML = headHtml;
 
-      // Filter Baris Data Berdasarkan Kata Kunci Pencarian
-      let bodyHtml = '';
-      rawUjianData.forEach(row => {
-        const rowText = Object.values(row).join(' ').toLowerCase();
-        if (keyword === '' || rowText.includes(keyword)) {
-          bodyHtml += '<tr>';
-          activeHeaders.forEach(h => {
-            const val = row[h] ? row[h].trim() : '-';
-            
-            // Format URL menjadi Tombol Buka Soal
-            if (val.startsWith('http')) {
-              bodyHtml += `<td>
-                <a href="${val}" target="_blank" class="btn btn-success btn-sm btn-exam text-nowrap">
-                  <i class="fa-solid fa-pen-to-square me-1"></i> Buka Soal
-                </a>
-              </td>`;
-            } else if (val === '-' || val === '') {
-              bodyHtml += `<td class="text-muted">-</td>`;
-            } else {
-              bodyHtml += `<td class="fw-medium">${val}</td>`;
-            }
-          });
-          bodyHtml += '</tr>';
+      let cardsHtml = '';
+
+      matchingRows.forEach(row => {
+        const mapel = row[2] ? row[2].trim() : 'Mata Pelajaran';
+        const link = row[selectedKelasIdx] ? row[selectedKelasIdx].trim() : '';
+
+        if (link && link.startsWith('http')) {
+          cardsHtml += `
+            <div class="result-card mb-3">
+              <div class="result-label">MATA PELAJARAN</div>
+              <div class="subject-title">${mapel}</div>
+              <a href="${link}" target="_blank" class="btn btn-primary btn-exam w-100">
+                🚀 Buka Ujian Sekarang
+              </a>
+            </div>
+          `;
         }
       });
 
-      document.getElementById('tableBody').innerHTML = bodyHtml || '<tr><td colspan="100%" class="text-center py-4 text-muted">Data tidak ditemukan.</td></tr>';
+      if (cardsHtml === '') {
+        cardsHtml = `
+          <div class="result-card">
+            <div class="result-label">MATA PELAJARAN</div>
+            <div class="subject-title text-muted" style="font-size: 1.1rem;">Belum Ada Jadwal / Link Ujian</div>
+            <button class="btn btn-secondary btn-exam w-100" disabled>Ujian Tidak Tersedia</button>
+          </div>
+        `;
+      }
+
+      resultContainer.innerHTML = cardsHtml;
     }
 
-    window.onload = loadAllData;
+    window.onload = initApp;
   </script>
 </body>
 </html>
